@@ -48,4 +48,5 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          ENABLE_TELEGRAM: ${{ secrets.ENABLE_TELEGRAM }}
         run: python flight_alerts.py
