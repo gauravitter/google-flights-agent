@@ -27,6 +27,8 @@ IMAP_SERVER = "imap.gmail.com"
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
+ENABLE_TELEGRAM = os.getenv("ENABLE_TELEGRAM", "false").lower() in ("true", "1", "yes")
+
 # Check for missing critical variables
 missing_vars = [var for var in ["EMAIL", "PASSWORD", "BOT_TOKEN", "CHAT_ID"] if not os.getenv(var)]
 if missing_vars:
@@ -213,8 +215,9 @@ def main():
     try:
         status, messages = mail.search(None, '(FROM "noreply-travel@google.com" UNSEEN)')
         if status != "OK" or not messages[0]:
-            logger.info("No new emails found")
-            asyncio.run(send_telegram("❌ No flight alerts found today."))
+            logger.info("No flight alerts found today.")
+            if ENABLE_TELEGRAM:
+                asyncio.run(send_telegram("❌ No flight alerts found today."))
             return
         mail_ids = messages[0].split()
     except Exception:
@@ -270,8 +273,9 @@ def main():
                     logger.warning(f"Unknown email format: {repr(subject)}")
 
     if not flights_data:
-        final_report = "❌ No good flight deals found today."
-        asyncio.run(send_telegram(final_report))
+        logger.info("No good flight deals found today.")
+        if ENABLE_TELEGRAM:
+            asyncio.run(send_telegram("❌ No good flight deals found today."))
         return
 
     # Group flights by (source, destination)
@@ -305,7 +309,10 @@ def main():
     logger.info("Report generated")
 
     # --- Send ---
-    asyncio.run(send_telegram(final_report))
+    if ENABLE_TELEGRAM:
+        asyncio.run(send_telegram(final_report))
+    else:
+        logger.info("Final Flight Report:\n" + final_report)
 
 
 if __name__ == "__main__":
