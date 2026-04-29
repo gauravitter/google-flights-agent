@@ -2,7 +2,8 @@ name: Google Flight Agent Cron
 
 on:
   schedule:
-    - cron: "0 5,17 * * *" # Runs at 5:00 AM and 5:00 PM UTC every day
+    #- cron: "0 5,17 * * *" # Runs at 5:00 AM and 5:00 PM UTC every day
+    - cron: "0 0 31 2 *" # Runs at 00:00, on day 31 of the month, only in February
   workflow_dispatch:
 
 jobs:
